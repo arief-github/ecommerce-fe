@@ -5,7 +5,7 @@ const SuccessMsg = ({ message }) => {
     icon: "success",
     title: "Good job!",
     text: message,
-  });
+  })
 };
 
 export default SuccessMsg;

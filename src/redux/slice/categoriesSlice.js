@@ -1,4 +1,5 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { resetSuccessAction, resetErrorAction } from "./globalActions";
 import baseURL from "../../utils/baseURL";
 import axios from "axios";
 
@@ -18,7 +19,14 @@ export const createCategoryAction = createAsyncThunk(
     "category/create",
     async (payload, { rejectWithValue, getState, dispatch }) => {
         try {
-            const { name } = payload;
+
+            const { name, file } = payload;
+
+            // formData
+            const formData = new FormData();
+
+            formData.append("name", name);
+            formData.append("file", file);
 
             const token = getState()?.users?.userAuth?.userInfo?.token;
             const config = {
@@ -27,10 +35,10 @@ export const createCategoryAction = createAsyncThunk(
                 }
             };
 
-            const { data } = await axios.post(`${baseURL}/categories`, { name }, config);
+            const { data } = await axios.post(`${baseURL}/categories`, formData, config);
 
             return data
-        } catch(error) {
+        } catch (error) {
             return rejectWithValue(error?.response?.data)
         }
     }
@@ -80,7 +88,6 @@ const categorySlice = createSlice({
         builder.addCase(fetchCategoriesAction.fulfilled, (state, action) => {
             state.loading = false;
             state.categories = action.payload;
-            state.isAdded = true;
         });
 
         builder.addCase(fetchCategoriesAction.rejected, (state, action) => {
@@ -89,6 +96,15 @@ const categorySlice = createSlice({
             state.isAdded = false;
             state.error = action.payload;
         })
+
+        //Reset err
+        builder.addCase(resetErrorAction.pending, (state, action) => {
+            state.error = null;
+        });
+        //Reset success
+        builder.addCase(resetSuccessAction.pending, (state, action) => {
+            state.isAdded = false;
+        });
     }
 })
 

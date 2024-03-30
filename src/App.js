@@ -30,8 +30,10 @@ import OrdersList from "./components/Admin/Orders/OdersList";
 import ManageOrders from "./components/Admin/Orders/ManageOrders";
 import Customers from "./components/Admin/Orders/Customers";
 import BrandsColorsList from "./components/Admin/Categories/BrandsColorsList";
-import {AuthRoute} from "./components/AuthRoute/AuthRoute";
-import {AdminRoute} from "./components/AuthRoute/AdminRoute";
+import BrandList from "./components/Admin/Categories/BrandList";
+
+import { AuthRoute } from "./components/AuthRoute/AuthRoute";
+import { AdminRoute } from "./components/AuthRoute/AdminRoute";
 
 const App = () => {
   return (
@@ -40,7 +42,7 @@ const App = () => {
       {/* hide navbar if admin */}
       <Routes>
         {/* nested route */}
-        <Route path="admin" element={ <AdminRoute>
+        <Route path="admin" element={<AdminRoute>
           <AdminDashboard />
         </AdminRoute>}>
           {/* products */} <Route path="" element={<OrdersList />} />
@@ -58,7 +60,7 @@ const App = () => {
           <Route path="edit-category/:id" element={<UpdateCategory />} />
           {/* brand category */}
           <Route path="add-brand" element={<AddBrand />} />
-          <Route path="all-brands" element={<BrandsColorsList />} />
+          <Route path="all-brands" element={<BrandList />} />
           {/* color category */}
           <Route path="add-color" element={<AddColor />} />
           <Route path="all-colors" element={<BrandsColorsList />} />

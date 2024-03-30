@@ -1,6 +1,7 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import baseURL from "../../utils/baseURL";
 import axios from "axios";
+import { resetSuccessAction, resetErrorAction } from "./globalActions";
 
 // Initial State
 const initialState = {
@@ -14,10 +15,8 @@ const initialState = {
 };
 
 // create color action
-export const createColorAction = createAsyncThunk("colors/create", async (payload, { rejectWithValue, getState, dispatch }) => {
+export const createColorAction = createAsyncThunk("colors/create", async (name, { rejectWithValue, getState, dispatch }) => {
     try {
-        const { name } = payload;
-
         // Token Auth
         const token = getState()?.users?.userAuth?.userInfo?.token;
         const config = {
@@ -35,14 +34,14 @@ export const createColorAction = createAsyncThunk("colors/create", async (payloa
 });
 
 // Fetch Color Action
-export const fetchColorAction = createAsyncThunk("colors/fetchAll", async(payload, { rejectWithValue, getState, dispatch }) => {
- try {
-     const { data } = await axios.get(`${baseURL}/colors`);
+export const fetchColorAction = createAsyncThunk("colors/fetchAll", async (payload, { rejectWithValue, getState, dispatch }) => {
+    try {
+        const { data } = await axios.get(`${baseURL}/colors`);
 
-     return data;
- } catch (error) {
-     rejectWithValue(error?.response?.data)
- }
+        return data;
+    } catch (error) {
+        rejectWithValue(error?.response?.data)
+    }
 })
 
 // Colors Slice
@@ -75,7 +74,6 @@ const colorSlices = createSlice({
         builder.addCase(fetchColorAction.fulfilled, (state, action) => {
             state.loading = false;
             state.colors = action.payload;
-            state.isAdded = true;
         });
 
         builder.addCase(fetchColorAction.rejected, (state, action) => {
@@ -83,6 +81,16 @@ const colorSlices = createSlice({
             state.colors = null;
             state.isAdded = false;
             state.error = action.payload;
+        });
+
+        builder.addCase(resetErrorAction.pending, (state, action) => {
+            state.isAdded = false;
+            state.error = null;
+        });
+        //reset success action
+        builder.addCase(resetSuccessAction.pending, (state, action) => {
+            state.isAdded = false;
+            state.error = null;
         });
     }
 })

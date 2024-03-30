@@ -1,20 +1,52 @@
+import { fetchProductsAction } from "../../../redux/slice/productsSlice";
+import baseURL from "../../../utils/baseURL";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ErrorMsg from "../../ErrorMsg/ErrorMsg";
 import LoadingComponent from "../../LoadingComp/LoadingComponent";
 import NoDataFound from "../../NoDataFound/NoDataFound";
+import Pagination from "../../Pagination/Pagination";
 
 export default function ManageStocks() {
-  //Selector
-  let products, loading, error;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 5;
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  }
+
+  let productUrl = `${baseURL}/products`;
 
   //delete product handler
   const deleteProductHandler = (id) => {};
+
+  //dispatch
+  const dispatch = useDispatch()
+
+  // fetching all products
+  useEffect(() => {
+
+    dispatch(
+        fetchProductsAction({
+            url: productUrl
+        }))
+  }, [dispatch, productUrl]);
+
+  //get data from store
+  const {
+    products: { products },
+    loading,
+    error
+  } = useSelector((state) => state?.products);
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">
-            Product List- [{products?.length}]{" "}
+            Product List- {products?.length}{" "}
           </h1>
           <p className="mt-2 text-sm text-gray-700">
             List of all the products in your account including their name,

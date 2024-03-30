@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
@@ -7,45 +9,125 @@ import ErrorMsg from "../../ErrorMsg/ErrorMsg";
 import LoadingComponent from "../../LoadingComp/LoadingComponent";
 import SuccessMsg from "../../SuccessMsg/SuccessMsg";
 
+import { fetchBrandsAction } from "../../../redux/slice/brandsSlice";
+import { fetchColorAction } from "../../../redux/slice/colorsSlice";
+import { fetchCategoriesAction } from "../../../redux/slice/categoriesSlice";
+import {
+  updateProductAction,
+  fetchProductAction
+} from "../../../redux/slice/productsSlice";
+
 //animated components for react-select
 const animatedComponents = makeAnimated();
 
 export default function UpdateProduct() {
-  //form data
-  const [formData, setFormData] = useState({
-    name: product?.name,
-    size: product?.size,
-    category: product?.category,
-    brand: product?.brand,
-    color: product?.color,
-    canBeShipped: product?.canBeShipped,
-    images: [],
-    price: product?.price,
-    shippingPrice: product?.shippingPrice,
-    totalQty: product?.totalQty,
-    description: product?.description,
-  });
-  //onChange
-  const handleOnChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const dispatch = useDispatch();
+  const { id } = useParams();
+
+  // fetch single product
+  useEffect(() => {
+    dispatch(fetchProductAction(id))
+  }, [id, dispatch]);
+
+  //Sizes
+  const sizes = ["S", "M", "L", "XL", "XXL"];
+  const [sizeOption, setSizeOption] = useState([]);
+  const handleSizeChange = (sizes) => {
+    setSizeOption(sizes);
   };
+  //converted sizes
+  const sizeOptionsCoverted = sizes?.map((size) => {
+    return {
+      value: size,
+      label: size,
+    };
+  });
 
-  //----fetch brands---
+  //categories
+  useEffect(() => {
+    dispatch(fetchCategoriesAction());
+  }, [dispatch]);
+  //select data from store
+  const { categories } = useSelector((state) => state?.categories?.categories);
 
-  let brands,
-    categories,
-    product,
-    error,
-    isUpdated,
-    sizeOptionsCoverted,
-    handleSizeChange,
-    colorOptionsCoverted,
-    handleColorChangeOption,
-    loading;
+  //brands
+  useEffect(() => {
+    dispatch(fetchBrandsAction());
+  }, [dispatch]);
+  //select data from store
+  const {
+    brands: { brands },
+  } = useSelector((state) => state?.brands);
+  //colors
+  const [colorsOption, setColorsOption] = useState([]);
+
+  const {
+    colors: { colors },
+  } = useSelector((state) => state?.colors);
+  useEffect(() => {
+    dispatch(fetchColorAction());
+  }, [dispatch]);
+
+  const handleColorChangeOption = (colors) => {
+    setColorsOption(colors);
+  };
+  //converted colors
+  const colorOptionsCoverted = colors?.map((color) => {
+    return {
+      value: color?.name,
+      label: color?.name,
+    };
+  });
+
+  // select data from store
+  const { product, isUpdated, loading, error } = useSelector(state => state?.products);
+
+  // form data
+  const [formData, setFormData] = useState({
+    name: product?.product?.name,
+    description: product?.product?.description,
+    category: "",
+    sizes: "",
+    brand: "",
+    colors: "",
+    price: product?.product?.price,
+    totalQty: product?.product?.totalQty,
+  })
+
+  useEffect(() => {
+    console.log(formData)
+  }, [formData]);
+
+  const handleOnChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  };
 
   //---onSubmit---
   const handleOnSubmit = (e) => {
     e.preventDefault();
+
+    // dispatch into update action
+    dispatch(
+      updateProductAction({
+        ...formData,
+        id,
+        colors: colorsOption?.map((color) => color.label),
+        size: sizeOption?.map((size) => size.label),
+      })
+    );
+
+    // and if update is success , reset the form field
+    setFormData({
+      name: "",
+      description: "",
+      category: "",
+      sizes: "",
+      brand: "",
+      colors: "",
+      images: "",
+      price: "",
+      totalQty: "",
+    });
   };
 
   return (
@@ -74,7 +156,7 @@ export default function UpdateProduct() {
                 <div className="mt-1">
                   <input
                     name="name"
-                    value={formData.name}
+                    value={formData?.name}
                     onChange={handleOnChange}
                     className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   />
@@ -106,7 +188,7 @@ export default function UpdateProduct() {
                 </label>
                 <select
                   name="category"
-                  value={formData.category}
+                  value={formData?.category}
                   onChange={handleOnChange}
                   className="mt-1  block w-full rounded-md border-gray-300 py-2  pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm border"
                   defaultValue="Canada">
@@ -129,7 +211,7 @@ export default function UpdateProduct() {
                 </label>
                 <select
                   name="brand"
-                  value={formData.brand}
+                  value={formData?.brand}
                   onChange={handleOnChange}
                   className="mt-1  block w-full rounded-md border-gray-300 py-2  pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm border"
                   defaultValue="Canada">
@@ -192,7 +274,7 @@ export default function UpdateProduct() {
                           <span>Upload files</span>
                           <input
                             name="images"
-                            value={formData.images}
+                            value={formData?.images}
                             onChange={handleOnChange}
                             type="file"
                           />
@@ -214,7 +296,7 @@ export default function UpdateProduct() {
                 <div className="mt-1">
                   <input
                     name="price"
-                    value={formData.price}
+                    value={formData?.price}
                     onChange={handleOnChange}
                     type="number"
                     className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
@@ -230,7 +312,7 @@ export default function UpdateProduct() {
                 <div className="mt-1">
                   <input
                     name="shippingPrice"
-                    value={formData.shippingPrice}
+                    value={formData?.shippingPrice}
                     onChange={handleOnChange}
                     type="number"
                     className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
@@ -245,7 +327,7 @@ export default function UpdateProduct() {
                 <div className="mt-1">
                   <input
                     name="totalQty"
-                    value={formData.totalQty}
+                    value={formData?.totalQty}
                     onChange={handleOnChange}
                     type="number"
                     className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
@@ -263,7 +345,7 @@ export default function UpdateProduct() {
                   <textarea
                     rows={4}
                     name="description"
-                    value={formData.description}
+                    value={formData?.description}
                     onChange={handleOnChange}
                     className="block w-full rounded-md border-gray-300 border shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     defaultValue={""}
