@@ -1,12 +1,18 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCategoriesAction } from "../../redux/slice/categoriesSlice";
 
 const AllCategories = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCategoriesAction())
+  }, [dispatch])
+
   const {
     categories: { categories },
-    loading,
-    error,
-  } = {};
+  } = useSelector((state) => state?.categories);
 
   return (
     <>

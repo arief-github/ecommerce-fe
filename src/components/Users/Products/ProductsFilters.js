@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Dialog,
   Disclosure,
@@ -15,6 +16,14 @@ import {
   PlusIcon,
 } from "@heroicons/react/20/solid";
 import Products from "./Products";
+import { useSearchParams } from "react-router-dom";
+import baseURL from "../../../utils/baseURL";
+import { fetchProductsAction } from "../../../redux/slice/productsSlice";
+import { fetchBrandsAction } from "../../../redux/slice/brandsSlice";
+import { fetchColorAction } from "../../../redux/slice/colorsSlice";
+import LoadingComponent from "../../LoadingComp/LoadingComponent";
+import ErrorMsg from "../../ErrorMsg/ErrorMsg";
+import NoDataFound from "../../NoDataFound/NoDataFound";
 
 const sortOptions = [
   { name: "Most Popular", href: "#", current: true },
@@ -68,20 +77,74 @@ const sizeCategories = [
 ];
 
 export default function ProductsFilters() {
+  const dispatch = useDispatch();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
+  const [params, setParams] = useSearchParams();
+  const category = params.get("category");
+
+  // filters
+  const [color, setColor] = useState("");
+  const [price, setPrice] = useState("");
+  const [brand, setBrand] = useState("");
+  const [size, setSize] = useState("");
+
+  // build up URL
+  let productUrl = `${baseURL}/products`;
+
+  if (category) {
+    productUrl = `${baseURL}/products?category=${category}`;
+  }
+  if (brand) {
+    productUrl = `${productUrl}&brand=${brand}`;
+  }
+  if (size) {
+    productUrl = `${productUrl}&size=${size}`;
+  }
+  if (price) {
+    productUrl = `${productUrl}&price=${price}`;
+  }
+  if (color) {
+    productUrl = `${productUrl}&color=${color?.name}`;
+  }
+  //f
+
+  // get store products data
+  const { products: { products }, loading, error } = useSelector((state) => state?.products);
+
+  //fetch brands
+  useEffect(() => {
+    dispatch(
+      fetchBrandsAction({
+        url: productUrl,
+      })
+    );
+  }, [dispatch]);
+  //get store data
+  const {
+    brands: { brands },
+  } = useSelector((state) => state?.brands);
+
+  //fetch colors
+  useEffect(() => {
+    dispatch(
+      fetchColorAction({
+        url: productUrl,
+      })
+    );
+  }, [dispatch]);
+
+  //get store data
+  const {
+    colors: { colors },
+  } = useSelector((state) => state?.colors);
+
+
   let colorsLoading;
   let colorsError;
-  let colors;
-  let setPrice;
-  let brands;
-  let setSize;
-  let setColor;
-  let setBrand;
   let productsLoading;
   let productsError;
-  let products;
 
   return (
     <div className="bg-white">
@@ -210,9 +273,9 @@ export default function ProductsFilters() {
                               ) : (
                                 <RadioGroup onChange={setColor}>
                                   <div className="flex items-start  flex-row flex-wrap">
-                                    {colors?.map((color) => (
+                                    {colors?.map((color, index) => (
                                       <RadioGroup.Option
-                                        key={color?._id}
+                                        key={index}
                                         value={color}
                                         className={({ active, checked }) =>
                                           classNames(
@@ -321,9 +384,9 @@ export default function ProductsFilters() {
                           </h3>
                           <Disclosure.Panel className="pt-6">
                             <div className="space-y-2">
-                              {brands?.map((brand) => (
+                              {brands?.map((brand, index) => (
                                 <div
-                                  key={brand?._id}
+                                  key={index}
                                   className="flex items-center">
                                   <input
                                     onClick={() => setBrand(brand?.name)}
@@ -688,9 +751,9 @@ export default function ProductsFilters() {
 
               {/* Product grid */}
               {productsLoading ? (
-                <h2 className="text-xl">Loading...</h2>
+                <LoadingComponent />
               ) : productsError ? (
-                <h2 className="text-red-500">{productsError}</h2>
+                <ErrorMsg message={productsError} />
               ) : (
                 <Products products={products} />
               )}

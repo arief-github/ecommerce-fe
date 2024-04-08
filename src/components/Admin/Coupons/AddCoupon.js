@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createCouponAction } from "../../../redux/slice/couponsSlice";
+import { resetSuccessAction } from "../../../redux/slice/globalActions";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import LoadingComponent from "../../LoadingComp/LoadingComponent";
@@ -6,6 +9,8 @@ import ErrorMsg from "../../ErrorMsg/ErrorMsg";
 import SuccessMsg from "../../SuccessMsg/SuccessMsg";
 
 export default function AddCoupon() {
+  const dispatch = useDispatch();
+
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
 
@@ -22,6 +27,17 @@ export default function AddCoupon() {
   const onHandleSubmit = (e) => {
     e.preventDefault();
 
+    dispatch(createCouponAction({
+      discount: formData?.discount,
+      code: formData?.code,
+      startDate,
+      endDate,
+    })).then(() => {
+      dispatch(resetSuccessAction())
+    }).catch(e => {
+      console.error(e)
+    })
+
     //reset form
     setFormData({
       code: "",
@@ -29,7 +45,7 @@ export default function AddCoupon() {
     });
   };
   //---coupon from store---
-  const { loading, isAdded, error } = {};
+  const { loading, isAdded, error } = useSelector((state) => state?.coupons);
   return (
     <>
       {error && <ErrorMsg message={error?.message} />}

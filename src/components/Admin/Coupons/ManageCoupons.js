@@ -1,16 +1,29 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCouponsAction, deleteCouponAction } from "../../../redux/slice/couponsSlice";
 
 import ErrorMsg from "../../ErrorMsg/ErrorMsg";
 import LoadingComponent from "../../LoadingComp/LoadingComponent";
 import NoDataFound from "../../NoDataFound/NoDataFound";
 
 export default function ManageCoupons() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCouponsAction())
+  }, [dispatch])
+
   //get coupons
-  const { coupons, loading, error } = {};
+  const { coupons, loading, error } = useSelector(state => state?.coupons);
 
   //---deleteHandler---
 
-  const deleteCouponHandler = (id) => {};
+  const deleteCouponHandler = (id) => {
+    dispatch(deleteCouponAction(id));
+
+    window.location.reload()
+  };
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">

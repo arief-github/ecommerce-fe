@@ -75,7 +75,7 @@ export default function Navbar() {
                   {categoriesToDisplay?.length <= 0 ? (
                     <>
                       <Link
-                        to={`/products?category=clothing`}
+                        to={`/products?category=hijab`}
                         className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
                         Clothing...
                       </Link>
@@ -114,15 +114,15 @@ export default function Navbar() {
                     !isLoggedIn ? <>
                       <div className="flow-root">
                         <Link
-                            to="/register"
-                            className="-m-2 block p-2 font-medium text-gray-900">
+                          to="/register"
+                          className="-m-2 block p-2 font-medium text-gray-900">
                           Create an account
                         </Link>
                       </div>
                       <div className="flow-root">
                         <Link
-                            to="/login"
-                            className="-m-2 block p-2 font-medium text-gray-900">
+                          to="/login"
+                          className="-m-2 block p-2 font-medium text-gray-900">
                           Sign in
                         </Link>
                       </div>
@@ -142,7 +142,7 @@ export default function Navbar() {
           {/* Top navigation  desktop*/}
           <div className="bg-gray-900">
             <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <p className="flex-1 text-center text-sm font-medium text-white lg:flex-none">
+              <p className="flex-1 text-center text-sm font-medium text-white lg:flex-none">
                 Get free delivery on orders over $100
               </p>
 
@@ -150,14 +150,14 @@ export default function Navbar() {
                 {
                   !isLoggedIn ? <>
                     <Link
-                        to="/register"
-                        className="text-sm font-medium text-white hover:text-gray-100">
+                      to="/register"
+                      className="text-sm font-medium text-white hover:text-gray-100">
                       Create an account
                     </Link>
                     <span className="h-6 w-px bg-gray-600" aria-hidden="true" />
                     <Link
-                        to="/login"
-                        className="text-sm font-medium text-white hover:text-gray-100">
+                      to="/login"
+                      className="text-sm font-medium text-white hover:text-gray-100">
                       Sign in
                     </Link>
                   </> : null
@@ -190,20 +190,20 @@ export default function Navbar() {
                         {categoriesToDisplay?.length <= 0 ? (
                           <>
                             <Link
-                                to={`/products?category=clothing`}
-                                className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
+                              to={`/products?category=clothing`}
+                              className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
                               Clothing...
                             </Link>
 
                             <Link
-                                href="/"
-                                className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
+                              href="/"
+                              className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
                               Men
                             </Link>
 
                             <Link
-                                href="/"
-                                className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
+                              href="/"
+                              className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">
                               Women
                             </Link>
                           </>
@@ -251,21 +251,21 @@ export default function Navbar() {
                         {
                           isLoggedIn ? <div className="flex">
                             <Link
-                                to="/customer-profile"
-                                className="-m-2 p-2 text-gray-400 hover:text-gray-500">
-                              <UserIcon className="h-6 w-6" aria-hidden="true"/>
+                              to="/customer-profile"
+                              className="-m-2 p-2 text-gray-400 hover:text-gray-500">
+                              <UserIcon className="h-6 w-6" aria-hidden="true" />
                             </Link>
                           </div> : null
                         }
                       </div>
 
                       <span
-                          className="mx-4 h-6 w-px bg-gray-200 lg:mx-6"
-                          aria-hidden="true"
+                        className="mx-4 h-6 w-px bg-gray-200 lg:mx-6"
+                        aria-hidden="true"
                       />
                       {/* login shopping cart mobile */}
                       <div className="flow-root">
-                      <Link
+                        <Link
                           to="/shopping-cart"
                           className="group -m-2 flex items-center p-2">
                           <ShoppingCartIcon

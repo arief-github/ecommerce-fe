@@ -5,7 +5,10 @@ import {
   GlobeAmericasIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/20/solid";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProductAction } from "../../../redux/slice/productsSlice";
+
 const product = {
   name: "Basic Tee",
   price: "$35",
@@ -83,12 +86,27 @@ function classNames(...classes) {
 }
 
 export default function Product() {
+  // dispatching action from redux
+  const dispatch = useDispatch();
+
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
 
-  //Add to cart handler
-  const addToCartHandler = (item) => {};
+  // product details variable object for handling detail product
   let productDetails = {};
+
+  // get id from params
+  const { id } = useParams();
+
+  // get product details
+  useEffect(() => {
+    dispatch(fetchProductAction(id))
+  }, [dispatch, id]);
+
+  const { product: { product }, loading, error } = useSelector((state) => state?.products);
+
+  //Add to cart handler
+  const addToCartHandler = (item) => { };
   let productColor;
   let productSize;
   let cartItems = [];
